@@ -520,6 +520,17 @@ rx_status_loop:
 			goto rx_next;
 		}
 
+<<<<<<< HEAD
+=======
+		new_mapping = dma_map_single(&cp->pdev->dev, new_skb->data, buflen,
+					 PCI_DMA_FROMDEVICE);
+		if (dma_mapping_error(&cp->pdev->dev, new_mapping)) {
+			dev->stats.rx_dropped++;
+			kfree_skb(new_skb);
+			goto rx_next;
+		}
+
+>>>>>>> 2c5c042... Linux 3.10.12
 		dma_unmap_single(&cp->pdev->dev, mapping,
 				 buflen, PCI_DMA_FROMDEVICE);
 
