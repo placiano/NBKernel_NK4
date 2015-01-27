@@ -1329,11 +1329,16 @@ static unsigned long kmem_cache_flags(unsigned long object_size,
 	/*
 	 * Enable debugging if selected on the kernel commandline.
 	 */
+<<<<<<< HEAD
 #ifdef CONFIG_TIMA_RKP_RO_CRED
 	return flags;
 #else
 	if (slub_debug && (!slub_debug_slabs ||
 		!strncmp(slub_debug_slabs, name, strlen(slub_debug_slabs))))
+=======
+	if (slub_debug && (!slub_debug_slabs || (name &&
+		!strncmp(slub_debug_slabs, name, strlen(slub_debug_slabs)))))
+>>>>>>> eb41710... Linux 3.10.21
 		flags |= slub_debug;
 
 	return flags;
