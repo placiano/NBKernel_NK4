@@ -2204,11 +2204,7 @@ static int mos7810_check(struct usb_serial *serial)
 
 static int mos7840_calc_num_ports(struct usb_serial *serial)
 {
-<<<<<<< HEAD
 	__u16 data = 0x00;
-=======
-	u16 product = le16_to_cpu(serial->dev->descriptor.idProduct);
->>>>>>> 45ce000... Linux 3.10.8
 	u8 *buf;
 	int mos7840_num_ports;
 
