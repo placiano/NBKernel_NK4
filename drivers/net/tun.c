@@ -1785,11 +1785,11 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
 		INIT_LIST_HEAD(&tun->disabled);
 		err = tun_attach(tun, file);
 		if (err < 0)
-			goto err_free_flow;
+			goto err_free_dev;
 
 		err = register_netdevice(tun->dev);
 		if (err < 0)
-			goto err_detach;
+			goto err_free_dev;
 
 		if (device_create_file(&tun->dev->dev, &dev_attr_tun_flags) ||
 		    device_create_file(&tun->dev->dev, &dev_attr_owner) ||
@@ -1840,12 +1840,7 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
 	strcpy(ifr->ifr_name, tun->dev->name);
 	return 0;
 
-err_detach:
-	tun_detach_all(dev);
-err_free_flow:
-	tun_flow_uninit(tun);
-	security_tun_dev_free_security(tun->security);
-err_free_dev:
+ err_free_dev:
 	free_netdev(dev);
 	return err;
 }
