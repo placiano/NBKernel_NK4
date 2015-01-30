@@ -127,16 +127,12 @@ int radeon_uvd_init(struct radeon_device *rdev)
 	if (r)
 		return r;
 
-<<<<<<< HEAD
 	memset(rdev->uvd.cpu_addr, 0, bo_size);
 	memcpy(rdev->uvd.cpu_addr, rdev->uvd_fw->data, rdev->uvd_fw->size);
 
 	r = radeon_uvd_suspend(rdev);
 	if (r)
 		return r;
-=======
-	radeon_bo_unreserve(rdev->uvd.vcpu_bo);
->>>>>>> f0c947a... Linux 3.10.7
 
 	for (i = 0; i < RADEON_MAX_UVD_HANDLES; ++i) {
 		atomic_set(&rdev->uvd.handles[i], 0);
@@ -169,7 +165,6 @@ int radeon_uvd_suspend(struct radeon_device *rdev)
 		}
 		radeon_bo_unreserve(rdev->uvd.vcpu_bo);
 
-<<<<<<< HEAD
 		if (rdev->uvd.cpu_addr) {
 			radeon_fence_driver_start_ring(rdev, R600_RING_TYPE_UVD_INDEX);
 		} else {
@@ -177,56 +172,26 @@ int radeon_uvd_suspend(struct radeon_device *rdev)
 		}
 	}
 	return r;
-=======
-	radeon_bo_unref(&rdev->uvd.vcpu_bo);
-
-	release_firmware(rdev->uvd_fw);
->>>>>>> f0c947a... Linux 3.10.7
 }
 
 int radeon_uvd_resume(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
 	int r;
-=======
-	unsigned size;
-	void *ptr;
-	int i;
->>>>>>> f0c947a... Linux 3.10.7
 
 	if (rdev->uvd.vcpu_bo == NULL)
 		return -EINVAL;
 
-<<<<<<< HEAD
 	r = radeon_bo_reserve(rdev->uvd.vcpu_bo, false);
 	if (r) {
 		radeon_bo_unref(&rdev->uvd.vcpu_bo);
 		dev_err(rdev->dev, "(%d) failed to reserve UVD bo\n", r);
 		return r;
 	}
-=======
-	for (i = 0; i < RADEON_MAX_UVD_HANDLES; ++i)
-		if (atomic_read(&rdev->uvd.handles[i]))
-			break;
-
-	if (i == RADEON_MAX_UVD_HANDLES)
-		return 0;
-
-	size = radeon_bo_size(rdev->uvd.vcpu_bo);
-	size -= rdev->uvd_fw->size;
-
-	ptr = rdev->uvd.cpu_addr;
-	ptr += rdev->uvd_fw->size;
-
-	rdev->uvd.saved_bo = kmalloc(size, GFP_KERNEL);
-	memcpy(rdev->uvd.saved_bo, ptr, size);
->>>>>>> f0c947a... Linux 3.10.7
 
 	/* Have been pin in cpu unmap unpin */
 	radeon_bo_kunmap(rdev->uvd.vcpu_bo);
 	radeon_bo_unpin(rdev->uvd.vcpu_bo);
 
-<<<<<<< HEAD
 	r = radeon_bo_pin(rdev->uvd.vcpu_bo, RADEON_GEM_DOMAIN_VRAM,
 			  &rdev->uvd.gpu_addr);
 	if (r) {
@@ -241,30 +206,6 @@ int radeon_uvd_resume(struct radeon_device *rdev)
 		dev_err(rdev->dev, "(%d) UVD map failed\n", r);
 		return r;
 	}
-=======
-int radeon_uvd_resume(struct radeon_device *rdev)
-{
-	unsigned size;
-	void *ptr;
-
-	if (rdev->uvd.vcpu_bo == NULL)
-		return -EINVAL;
-
-	memcpy(rdev->uvd.cpu_addr, rdev->uvd_fw->data, rdev->uvd_fw->size);
-
-	size = radeon_bo_size(rdev->uvd.vcpu_bo);
-	size -= rdev->uvd_fw->size;
-
-	ptr = rdev->uvd.cpu_addr;
-	ptr += rdev->uvd_fw->size;
-
-	if (rdev->uvd.saved_bo != NULL) {
-		memcpy(ptr, rdev->uvd.saved_bo, size);
-		kfree(rdev->uvd.saved_bo);
-		rdev->uvd.saved_bo = NULL;
-	} else
-		memset(ptr, 0, size);
->>>>>>> f0c947a... Linux 3.10.7
 
 	radeon_bo_unreserve(rdev->uvd.vcpu_bo);
 
@@ -281,8 +222,8 @@ void radeon_uvd_free_handles(struct radeon_device *rdev, struct drm_file *filp)
 {
 	int i, r;
 	for (i = 0; i < RADEON_MAX_UVD_HANDLES; ++i) {
-		uint32_t handle = atomic_read(&rdev->uvd.handles[i]);
-		if (handle != 0 && rdev->uvd.filp[i] == filp) {
+		if (rdev->uvd.filp[i] == filp) {
+			uint32_t handle = atomic_read(&rdev->uvd.handles[i]);
 			struct radeon_fence *fence;
 
 			r = radeon_uvd_get_destroy_msg(rdev,

@@ -1145,10 +1145,6 @@ struct radeon_uvd {
 	struct radeon_bo	*vcpu_bo;
 	void			*cpu_addr;
 	uint64_t		gpu_addr;
-<<<<<<< HEAD
-=======
-	void			*saved_bo;
->>>>>>> f0c947a... Linux 3.10.7
 	atomic_t		handles[RADEON_MAX_UVD_HANDLES];
 	struct drm_file		*filp[RADEON_MAX_UVD_HANDLES];
 	struct delayed_work	idle_work;
